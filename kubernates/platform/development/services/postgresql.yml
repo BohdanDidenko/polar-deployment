@@ -30,6 +30,13 @@ spec:
             limits:
               cpu: 200m
               memory: 120Mi
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: postgres-config-volume
+      volumes:
+        - name: postgres-config-volume
+          configMap:
+            name: postgres-config
 
 ---
 
@@ -47,3 +54,18 @@ spec:
     - protocol: TCP
       port: 5432
       targetPort: 5432
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    db: polar-postgres
+data:
+  init.sql: |
+    CREATE DATABASE polardb_catalog;
+    CREATE DATABASE polardb_order;
